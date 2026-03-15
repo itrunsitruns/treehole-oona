@@ -1,91 +1,145 @@
-<!DOCTYPE html><html>
+
+<!DOCTYPE html>
+<html>
 <head>
 <meta charset="UTF-8">
-<title>Tree Hole & Ööna v2</title>
+<title>Tree Hole & Ööna</title>
+
 <script src="https://cdn.jsdelivr.net/npm/p5@1.9.3/lib/p5.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/p5@1.9.3/lib/addons/p5.sound.min.js"></script>
+
 <style>
-body{margin:0;overflow:hidden;background:#0f0a19;font-family:Arial;}
-#text{position:fixed;top:20px;left:20px;color:white;opacity:.6;font-size:14px;}
+body{
+margin:0;
+overflow:hidden;
+background:#0f0a19;
+font-family:Arial;
+}
+
+#text{
+position:fixed;
+top:20px;
+left:20px;
+color:white;
+opacity:.6;
+font-size:14px;
+}
 </style>
+
 </head>
+
 <body>
+
 <div id="text">
-🌙 Tree Hole & Ööna v2<br>
+🌙 Tree Hole & Ööna<br>
 Hold = emotion<br>
 Release = calm<br>
-Speak or breathe to move the stars & fireflies
+Speak or breathe to move the stars
 </div>
+
 <script>
-let pressTime = 0;
-let intensity = 0;
-let stars = [];
-let fireflies = [];
-let mic;
-let trailPoints = [];
+
+let pressTime = 0
+let intensity = 0
+let stars = []
+let mic
+
 function setup(){
-  createCanvas(window.innerWidth, window.innerHeight);
-  background(15,10,25);
-  strokeWeight(2);
-  mic = new p5.AudioIn();
-  mic.start();
-  for(let i=0;i<120;i++) stars.push({x:random(width),y:random(height),size:random(1,3),speed:random(.1,.5)});
-  for(let i=0;i<80;i++) fireflies.push({x:random(width),y:random(height),size:random(2,5),vx:0,vy:0}));
+
+createCanvas(window.innerWidth, window.innerHeight)
+background(15,10,25)
+
+strokeWeight(2)
+
+mic = new p5.AudioIn()
+mic.start()
+
+for(let i=0;i<120;i++){
+stars.push({
+x:random(width),
+y:random(height),
+size:random(1,3),
+speed:random(.1,.5)
+})
 }
+
+}
+
 function draw(){
-  let soundLevel = mic.getLevel();
-  let breath = sin(frameCount*0.02)*20;
-  noStroke();
-  fill(15,10,25,10);
-  rect(0,0,width,height);
-  drawStars(soundLevel);
-  drawFireflies(soundLevel);
-  if(mouseIsPressed){
-    pressTime++;
-    intensity = min(255, pressTime*3);
-    let r = map(intensity,0,255,80,255);
-    let g = map(intensity,0,255,40,120);
-    let b = map(intensity,0,255,120,255);
-    stroke(r+breath,g,b+breath,intensity);
-    let wild = map(pressTime,0,200,10,150);
-    for(let i=0;i<4;i++){
-      let offset=random(-wild,wild);
-      line(mouseX+offset,mouseY+offset,pmouseX+offset,pmouseY+offset);
-    }
-    trailPoints.push({x:mouseX,y:mouseY});
-  } else { pressTime=0; intensity=0; trailPoints=[]; }
-  drawConstellations();
+
+let soundLevel = mic.getLevel()
+
+// breathing pulse
+let breath = sin(frameCount*0.02)*20
+
+noStroke()
+fill(15,10,25,10)
+rect(0,0,width,height)
+
+drawStars(soundLevel)
+
+if(mouseIsPressed){
+
+pressTime++
+intensity = min(255, pressTime*3)
+
+let r = map(intensity,0,255,80,255)
+let g = map(intensity,0,255,40,120)
+let b = map(intensity,0,255,120,255)
+
+stroke(r+breath,g,b+breath,intensity)
+
+let wild = map(pressTime,0,200,10,150)
+
+for(let i=0;i<4;i++){
+
+let offset=random(-wild,wild)
+
+line(
+mouseX+offset,
+mouseY+offset,
+pmouseX+offset,
+pmouseY+offset
+)
+
 }
+
+}else{
+
+pressTime=0
+intensity=0
+
+}
+
+}
+
 function drawStars(soundLevel){
-  for(let s of stars){
-    let flicker = random(1,3)+soundLevel*50;
-    noStroke(); fill(200,220,255,180);
-    circle(s.x,s.y,s.size+flicker);
-    s.y += s.speed + soundLevel*5;
-    if(s.y>height){s.y=0; s.x=random(width);}
-  }
+
+for(let s of stars){
+
+let flicker = random(1,3)+soundLevel*50
+
+noStroke()
+fill(200,220,255,180)
+
+circle(s.x,s.y,s.size+flicker)
+
+s.y += s.speed + soundLevel*5
+
+if(s.y>height){
+s.y=0
+s.x=random(width)
 }
-function drawFireflies(soundLevel){
-  for(let f of fireflies){
-    let dx = (mouseX || width/2) - f.x;
-    let dy = (mouseY || height/2) - f.y;
-    f.vx += dx*0.002; f.vy += dy*0.002;
-    f.vx *= 0.9; f.vy *= 0.9;
-    f.x += f.vx; f.y += f.vy;
-    noStroke(); fill(255,255,200,180+soundLevel*200); circle(f.x,f.y,f.size);
-  }
+
 }
-function drawConstellations(){
-  stroke(180,200,255,100);
-  for(let i=0;i<trailPoints.length;i++){
-    for(let j=i+1;j<trailPoints.length;j++){
-      if(dist(trailPoints[i].x,trailPoints[i].y,trailPoints[j].x,trailPoints[j].y)<100){
-        line(trailPoints[i].x,trailPoints[i].y,trailPoints[j].x,trailPoints[j].y);
-      }
-    }
-  }
+
 }
-function windowResized(){resizeCanvas(window.innerWidth,window.innerHeight);}
+
+function windowResized(){
+resizeCanvas(window.innerWidth,window.innerHeight)
+}
+
 </script>
+
 </body>
 </html>
